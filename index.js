@@ -14,7 +14,7 @@ const resumeRoutes = require("./routes/resumeRoutes");
 app.use("/api/users", userRoutes);
 app.use("/api/resumes", resumeRoutes);
 app.use(cors({
-  origin: "https://your-frontend.vercel.app", // replace with actual Vercel URL
+  origin: "https://poornima-resume-generator.vercel.app", // replace with actual Vercel URL
   credentials: true
 }));
 
