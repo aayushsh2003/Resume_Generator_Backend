@@ -2,6 +2,41 @@ const express = require("express");
 const router = express.Router();
 const Resume = require("../models/Resume");
 
+const User = require("../models/User");
+const jwt = require("jsonwebtoken");
+
+// Save resume
+router.post("/save", async (req, res) => {
+  const token = req.headers.authorization?.split(" ")[1];
+  if (!token) return res.status(401).json({ message: "Unauthorized" });
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findById(decoded.id);
+
+    user.resumes = [req.body]; // overwrite OR push() to allow multiple
+    await user.save();
+
+    res.status(200).json({ message: "Resume saved!" });
+  } catch (err) {
+    res.status(500).json({ message: "Saving failed" });
+  }
+});
+
+router.get("/load", async (req, res) => {
+  const token = req.headers.authorization?.split(" ")[1];
+  if (!token) return res.status(401).json({ message: "Unauthorized" });
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findById(decoded.id);
+    res.status(200).json(user.resumes[0] || {}); // return first resume
+  } catch (err) {
+    res.status(500).json({ message: "Loading failed" });
+  }
+});
+
+
 // Create Resume
 router.post("/create", async (req, res) => {
   try {
